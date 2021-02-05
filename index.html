@@ -1,73 +1,138 @@
-<head>
-<script>
+<html>
+  <head>
+    <style>
+      html {
+        text-align: center;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      }
+      #buttons {
+        margin: 20px;
+      }
+      #scores {
+        border: 1px solid black;
+        padding: 20px;
+      }
+      #log {
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="buttons">
+        <button id="rock">Rock</button>
+        <button id="paper">Paper</button>
+        <button id="scissors">Scissors</button>
+      </div>  
 
-  function computerPlay() {
-    const playNumber = Math.floor(Math.random() * 3);
+      <div id="scores">
+        Player: <span id="player-score">0</span>
+        Computer: <span id="computer-score">0</span>
+      </div>
+      <div id="log">
 
-    switch (playNumber) {
-      case 0: return "Rock";
-      case 1: return "Paper";
-      case 2: return "Scissors";
-    }
-  }
+      </div>
+    </main>
 
-  function playRound(a, b) {
-    let playerSelection = a.charAt(0).toUpperCase() + a.slice(1).toLowerCase();
-    let computerSelection = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
+  
+    <script>
 
-    const r = "Rock";
-    const p = "Paper";
-    const s = "Scissors";
-    
-    if (playerSelection === computerSelection) {
-      return [0, playerSelection, computerSelection];
-    } else if ((playerSelection === r && computerSelection === s) ||
-      (playerSelection === s && computerSelection === p) ||
-      (playerSelection === p && computerSelection === r)) {
-        return [1, playerSelection, computerSelection];
-    } else {
-      return [-1, playerSelection, computerSelection];
-    };
-  }
+      let playerScore = 0;
+      let computerScore = 0;
 
-  function game() {
-    let playerScore = 0;
-    let computerScore = 0;
+      let roundNumber = 1;
 
-    for (let i = 1; i <= 5; i++) {
-      const playerSelection = prompt("Which do you choose?\nType Rock, Paper, or Scissors:");
-      const result = playRound(playerSelection, computerPlay());
+      function log(text) {
+        const newLog = document.createElement('p')
+        newLog.textContent = `Round ${roundNumber}: ${text}`;
+        document.querySelector("#log").appendChild(newLog);
+      }
 
-      const winMsg = "You win! " + result[1] + " beats " + result[2];
-      const loseMsg = "You lose! " + result[2] + " beats " + result[1];
-      const tieMsg = "It's a tie! You both chose " + result[2];
-      
-      if (result[0] === 1) {
-        playerScore++;
-        console.log(winMsg);
-      } else if (result[0] === -1) {
-        computerScore++;
-        console.log(loseMsg);
-      } else {
-        console.log(tieMsg);
-      };
-    };
+      function finalLog(text) {
+        const newLog = document.createElement('p')
+        newLog.style.cssText = 'font-size: 150%';
+        newLog.textContent = text;
+        document.querySelector("#log").appendChild(newLog);
+      }
 
-    const gameWinMsg = "Congratulations! You won " + playerScore + " to " + computerScore;
-    const gameLoseMsg = "Bummer! You lost " + computerScore + " to " + playerScore;
-    const gameTieMsg = "It's a tie! You both scored " + computerScore;
+      function updateScore(winner) {
+        const playerSpan = document.querySelector('#player-score');
+        const computerSpan = document.querySelector('#computer-score');
 
-    if (playerScore > computerScore) {
-      console.log(gameWinMsg);
-    } else if (computerScore > playerScore) {
-      console.log(gameLoseMsg);
-    } else {
-      console.log(gameTieMsg);
-    };
-  }
+        if (winner === "player") {
+          playerScore++;
+          playerSpan.textContent = playerScore;
+        } 
+        
+        if (winner === "computer") {
+          computerScore++;
+          computerSpan.textContent = computerScore;
+        }
 
-  game();
+        if (playerScore === 5 || computerScore === 5) {
+          endGame();
+        }
 
-</script>
-</head>
-<body></body>
+      }
+  
+      function computerPlay() {
+        const playNumber = Math.floor(Math.random() * 3);
+  
+        switch (playNumber) {
+          case 0: return "Rock";
+          case 1: return "Paper";
+          case 2: return "Scissors";
+        }
+      }
+  
+      function playRound(playerSelection, computerSelection) {
+        const r = "Rock";
+        const p = "Paper";
+        const s = "Scissors";
+
+        const winMsg = "You win! " + playerSelection + " beats " + computerSelection;
+        const loseMsg = "You lose! " + computerSelection + " beats " + playerSelection;
+        const tieMsg = "It's a tie! You both chose " + playerSelection;
+  
+        if (playerSelection === computerSelection) {
+          log(tieMsg);
+        } else if ((playerSelection === r && computerSelection === s) ||
+            (playerSelection === s && computerSelection === p) ||
+            (playerSelection === p && computerSelection === r)) {
+          updateScore("player");
+          log(winMsg);
+        } else {
+          updateScore("computer");
+          log(loseMsg);
+        };
+
+        roundNumber++;
+      }
+  
+      function endGame() {
+  
+        const gameWinMsg = "Congratulations! You won " + playerScore + " to " + computerScore;
+        const gameLoseMsg = "Bummer! You lost " + computerScore + " to " + playerScore;
+        const gameTieMsg = "It's a tie! You both scored " + computerScore;
+  
+        if (playerScore > computerScore) {
+          finalLog(gameWinMsg);
+        } else if (computerScore > playerScore) {
+          finalLog(gameLoseMsg);
+        } else {
+          finalLog(gameTieMsg);
+        };
+
+      }
+
+      const rockBtn = document.querySelector('#rock');
+      const paperBtn = document.querySelector('#paper');
+      const scissorsBtn = document.querySelector('#scissors');
+
+      rockBtn.addEventListener('click', () => playRound("Rock", computerPlay()));
+      paperBtn.addEventListener('click', () => playRound("Paper", computerPlay()));
+      scissorsBtn.addEventListener('click', () => playRound("Scissors", computerPlay()));
+
+    </script>
+  </body>
+</html>
